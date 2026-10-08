@@ -1,0 +1,225 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1046{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset1 Cambria Math;}{\f2\fnil Calibri;}}
+{\*\generator Riched20 10.0.19041}{\*\mmathPr\mmathFont1\mwrapIndent1440 }\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang22 Encontrei o c\'f3digo p\'fablico do DLSS5-Feeder, incluindo o shader que est\'e1vamos procurando. Isso nos d\'e1 uma base concreta para estudar a integra\'e7\'e3o no seu PES.\par
+\par
+O PES-Files retornou bloqueio de acesso (403), ent\'e3o n\'e3o confirmei o conte\'fado do pacote desse site. Localizei separadamente o  reposit\'f3rio do autor e examinei a vers\'e3o 0.7.0, correspondente ao log de refer\'eancia.\par
+\par
+O que essa base oferece\par
+A estrutura documentada \'e9:\par
+\par
+Imagem do jogo + profundidade + movimento estimado \f1\u8594?\f0  integra\'e7\'e3o D3D11/D3D12 \f1\u8594?\f0  processamento neural \f1\u8594?\f0  imagem final.\par
+\par
+O Feeder fornece os dados e faz a integra\'e7\'e3o. O modelo neural depende de outro add-on e do runtime da NVIDIA; seus pesos n\'e3o est\'e3o inclu\'eddos no c\'f3digo aberto do Feeder.\par
+\par
+Agora sabemos resolver a configura\'e7\'e3o de movimento\par
+O  shader da vers\'e3o 0.7.0 define:\par
+\par
+Valor de DLSS5_MV_PROVIDER\tab Fornecedor\par
+0\tab Shader que produza texMotionVectors\par
+1\tab iMMERSE Launchpad\par
+2\tab VORT\par
+3\tab LumeniteFX Kernel\par
+4\tab LumeniteFX QuantMotion\par
+Seu primeiro log j\'e1 mostrava LumeniteFX Kernel instalado e compilado. Portanto, se voc\'ea estiver usando esse mesmo Feeder/shader, existe uma configura\'e7\'e3o fundamentada para testar:\par
+\par
+Nas defini\'e7\'f5es de pr\'e9-processador do ReShade, selecionar DLSS5_MV_PROVIDER=3.\par
+Ativar LumeniteFX Kernel e coloc\'e1-lo antes de DLSS 5 Feed.\par
+Recarregar os efeitos e conferir o diagn\'f3stico de movimento.\par
+Essa op\'e7\'e3o pertence ao shader no ReShade. Ela n\'e3o \'e9 mode=2 do CFG \f2\emdash  esse par\f0\'e2metro seleciona o caminho completo de processamento.\par
+\par
+O limite para sua RTX 3050\par
+A documenta\'e7\'e3o atual do autor informa que o runtime neural padr\'e3o mencionado atende RTX 50 e que outras gera\'e7\'f5es dependem de vers\'f5es comunit\'e1rias espec\'edficas. Ainda n\'e3o verifiquei uma combina\'e7\'e3o funcional na RTX 3050 de 6 GB. Configurar o movimento resolve uma entrada necess\'e1ria, mas n\'e3o comprova compatibilidade do modelo.\par
+\par
+J\'e1 temos c\'f3digo para estudar captura, transporte e prepara\'e7\'e3o dos buffers, sem voc\'ea precisar reenviar o .fx. O ponto ainda pendente \'e9 encontrar e validar o processamento neural que caiba na sua placa, mantendo qualidade e desempenho. Nenhuma nova vers\'e3o foi instalada ou testada nesta etapa.\par
+\par
+14 hr ago\par
+You\par
+ent\'e3o me fa\'e7a um modelo que ai eu ja testo aqui para validar o processamento neural que caiba na sua placa, mantendo qualidade e desempenho.\par
+\par
+14 hr ago\par
+\par
+Worked for 8m 55s\par
+Preparei o PES Balance 0.5 para voc\'ea testar dentro do jogo.\par
+\par
+Baixar prot\'f3tipo para Windows\par
+Usa pesos pr\'e9-treinados reais do Zero-DCE++, executados pelo ReShade. Ajusta exposi\'e7\'e3o e cores; n\'e3o entrega reconstru\'e7\'e3o de materiais ou ilumina\'e7\'e3o global equivalente ao DLSS 5. N\'e3o precisa instalar Python nem trocar DLLs.\par
+\par
+Como testar\par
+Feche o PES e extraia todo o ZIP.\par
+Abra PESBalance.exe, selecione o jogo e o ReShade.ini.\par
+Clique Instalar IA 0.5 \f2\emdash  seu preset ser\f0\'e1 preservado.\par
+No ReShade, recarregue e ative PES Balance 0.5 - Exposicao neural pre-treinada.\par
+Comece com intensidade 0,15 e limite 0,035. Use Original a esquerda para comparar.\par
+Se pesar, altere a defini\'e7\'e3o de pr\'e9-processador para PBEXPOSURE_DIVISOR=8 e recarregue.\par
+\par
+Valida\'e7\'e3o local: passaram 20 grupos de testes do instalador, build, an\'e1lise de sintaxe do shader e compara\'e7\'e3o num\'e9rica com o modelo original. O custo dos 19 passes, a compila\'e7\'e3o pelo driver e os 60 FPS ainda precisam do seu teste.\par
+\par
+As texturas pr\'f3prias somam aproximadamente 29 MiB no padr\'e3o; isso n\'e3o representa a VRAM total do jogo.\par
+\par
+Envie uma captura da aba Estat\'edsticas com a t\'e9cnica marcada e diga como ficou em movimento. Para comparar desempenho, desmarque a t\'e9cnica inteira: intensidade zero continua processando a rede.\par
+\par
+Prot\'f3tipo de pesquisa n\'e3o comercial; licen\'e7a e c\'f3digo inclu\'eddos.\par
+\par
+14 hr ago\par
+\par
+Outputs (46)\par
+LEIA-ME.html\par
+\par
+PESBalance.exe\par
+PESBalance.exe.config\par
+PES Balance Neural Exposure 0.5 \f2\emdash  prot\f0\'f3tipo para teste\par
+Windows 10 com .NET Framework 4.8 \f2\bullet  ReShade 6.8 x64 \bullet  PES 2021 D3D11 \bullet  SDR Alvo de avalia\f0\'e7\'e3o: RTX 3050 6 GB, 1920\'d71080. Pesquisa n\'e3o comercial; consulte THIRD-PARTY-NOTICES.txt.\par
+\par
+O que est\'e1 sendo testado\par
+Rede Zero-DCE++ pr\'e9-treinada, dos autores Chongyi Li, Chunle Guo e Chen Change Loy, com 10.561 par\'e2metros. Pesos reais do checkpoint oficial Epoch99.pth, convertidos para constantes de shader. A rede recebe RGB e prev\'ea curvas de exposi\'e7\'e3o/cor; aplica a mesma curva oito vezes, como o modelo original. N\'e3o houve treinamento com imagens do PES.\par
+\par
+\'c9 uma experi\'eancia de exposi\'e7\'e3o neural em tempo real. N\'e3o reconstr\'f3i materiais, rostos, luzes f\'edsicas, ilumina\'e7\'e3o global, movimento ou geometria; n\'e3o \'e9 DLSS 5, super-resolu\'e7\'e3o ou gera\'e7\'e3o de frames. N\'e3o depende do pacote Feeder/RenoDX nem substitui DLLs. N\'e3o usa Tensor Cores: a infer\'eancia \'e9 realizada pelas unidades comuns de shaders da GPU. O ONNX inclu\'eddo \'e9 para desenvolvimento, n\'e3o \'e9 executado pelo aplicativo.\par
+\par
+A rede calcula curvas em resolu\'e7\'e3o reduzida; o resultado \'e9 aplicado ao frame inteiro com mistura e limite de altera\'e7\'e3o. Os buffers intermedi\'e1rios usam FP16; constantes e aritm\'e9tica s\'e3o FP32. N\'e3o \'e9 quantiza\'e7\'e3o INT8. N\'e3o h\'e1 hist\'f3rico temporal: movimentos n\'e3o acumulam frames antigos, mas as curvas ainda podem oscilar entre frames. A rede n\'e3o conhece materiais ou o HUD; as duas faixas de prote\'e7\'e3o s\'e3o m\'e1scaras manuais, n\'e3o segmenta\'e7\'e3o. Menus e placares fora das faixas podem ser afetados. A entrada esperada \'e9 SDR; n\'e3o usar este prot\'f3tipo como processador HDR.\par
+\par
+Instalar sobre o PES Balance existente\par
+Feche o PES. Extraia o ZIP inteiro em uma pasta nova; n\'e3o execute dentro do ZIP.\par
+Abra PESBalance.exe. O t\'edtulo deve mostrar 0.5.\par
+Selecione seu PES2021.exe e o ReShade.ini usados com Sider/GogoZ.\par
+Clique Instalar IA 0.5. O programa instala o novo shader em PESBalanceData\\Shaders, faz backup do preset e preserva seus efeitos e configura\'e7\'f5es. Para esta atualiza\'e7\'e3o, n\'e3o use Aplicar perfil (ele troca o preset).\par
+Inicie o jogo pelo atalho habitual. Abra ReShade (Home), recarregue os efeitos e marque PES Balance 0.5 - Exposicao neural pre-treinada (PESBalanceNeuralExposure05). A t\'e9cnica possui 19 passes.\par
+Para a primeira compara\'e7\'e3o, use um preset de teste e desligue temporariamente os outros efeitos. Coloque 0.5 antes de corre\'e7\'f5es de cor, Lighting 0.4 e nitidez quando voltar a combin\'e1-los. N\'e3o ative o Feed/RenoDX para esse teste: este shader funciona independentemente.\par
+Comece com Intensidade 0,15, Limite 0,035, Compara\'e7\'e3o: Resultado limitado, faixas superior 0,08 e inferior 0,18. O efeito padr\'e3o \'e9 deliberadamente moderado. N\'e3o espere uma reconstru\'e7\'e3o visual como a refer\'eancia neural fornecida.\par
+Se o gerenciador disser que n\'e3o h\'e1 uma instala\'e7\'e3o registrada do PES Balance, use a instala\'e7\'e3o manual abaixo para preservar seu preset. N\'e3o \'e9 necess\'e1rio reinstalar o ReShade, alterar profundidade ou instalar Python.\par
+\par
+Instala\'e7\'e3o manual alternativa\par
+Com o jogo fechado, copie somente manual/PESBalanceExposure05.fx para uma pasta j\'e1 listada em Effect search paths do ReShade, por exemplo reshade-shaders\\Shaders. Se j\'e1 houver um arquivo desse nome, fa\'e7a backup antes. Mantenha s\'f3 uma c\'f3pia do shader nos caminhos de busca; n\'e3o combine esta op\'e7\'e3o com a c\'f3pia instalada pelo gerenciador. Recarregue os efeitos e ative a t\'e9cnica. Esta op\'e7\'e3o n\'e3o altera INIs nem cria o registro do gerenciador.\par
+\par
+Comparar e medir\par
+Em Compara\'e7\'e3o, selecione Original a esquerda: a metade esquerda mant\'e9m a entrada recebida pelo shader e a direita aplica a rede. Outros efeitos habilitados ainda fazem parte dessa entrada/sa\'edda. Para comparar o modelo isoladamente, desligue-os temporariamente.\par
+Curvas da rede visualiza os coeficientes; Resultado bruto da rede ignora mistura, limite e prote\'e7\'e3o do HUD de prop\'f3sito. Ambos s\'e3o diagn\'f3sticos. Volte para Resultado limitado para jogar.\par
+Para medir custo de GPU/FPS, desmarque a t\'e9cnica inteira e depois marque novamente. Intensidade zero e compara\'e7\'e3o lado a lado continuam calculando a rede e n\'e3o medem o custo de desativ\'e1-la.\par
+Jogue o mesmo trecho com c\'e2mera em movimento, passes, jogadores, bola, replay e mudan\'e7as de luz. Depois teste o preset completo. Registre o custo GPU da t\'e9cnica na aba Estat\'edsticas do ReShade, al\'e9m do FPS/tempo de frame e VRAM total da GPU no seu monitor habitual.\par
+Fa\'e7a pelo menos 60 segundos em cada condi\'e7\'e3o, ap\'f3s a compila\'e7\'e3o e carregamento inicial. Um screenshot de menu ou FPS travado sozinho n\'e3o mostra a folga real do frame. 60 FPS oferece aproximadamente 16,67 ms para o jogo inteiro.\par
+Envie uma captura das Estat\'edsticas com 0.5 marcado, imagens com/sem efeito na mesma c\'e2mera e seu relato de cintila\'e7\'e3o, cores ou perda de detalhes. Se poss\'edvel, envie v\'eddeo curto em movimento e o ReShade.log. O arquivo RESULTADO-DO-TESTE.txt \'e9 um formul\'e1rio manual, n\'e3o uma medi\'e7\'e3o autom\'e1tica.\par
+Se ficar\par
+README.md\par
+\par
+You\par
+desempenho esta otimo da para melhorar bastante\par
+\par
+3 attachments\par
+14 hr ago\par
+\par
+Worked for 8m 53s\par
+Preparei a vers\'e3o 0.6 com melhorias na qualidade da exposi\'e7\'e3o.\par
+\par
+Baixar PES Balance 0.6 \f2\emdash  Windows\par
+Mantive a rede pr\f0\'e9-treinada e melhorei:\par
+\par
+Preserva\'e7\'e3o de cores de uniformes, pele e gramado.\par
+Prote\'e7\'e3o das \'e1reas claras e pretos profundos.\par
+Amplia\'e7\'e3o das curvas neurais guiada pelos contornos da imagem.\par
+Como atualizar\par
+Feche o PES, extraia o ZIP e abra PESBalance.exe.\par
+Selecione o jogo e o ReShade.ini; clique Instalar IA 0.6.\par
+No ReShade, desmarque a exposi\'e7\'e3o neural 0.5 e marque PES Balance 0.6 \f2\emdash  Exposicao neural com cores preservadas.\par
+Comece com os padr\f0\'f5es: intensidade 0,40, limite 0,060 e divisor 6. Depois, se continuar est\'e1vel, experimente PBEXPOSURE_DIVISOR=4 para infer\'eancia em 480\'d7270. Isso aumenta o trabalho da GPU.\par
+\par
+Valida\'e7\'e3o: passaram 22 grupos de testes do instalador, build, an\'e1lise do shader e testes num\'e9ricos. A 0.6 mant\'e9m 19 passes e aproximadamente 29 MiB de texturas no padr\'e3o; seu novo custo e resultado visual ainda precisam ser medidos no jogo.\par
+\par
+A 0.5 permanece dispon\'edvel para compara\'e7\'e3o. Use apenas uma das duas por vez e envie as Estat\'edsticas da 0.6 com uma compara\'e7\'e3o visual.\par
+\par
+13 hr ago\par
+\par
+Outputs (60)\par
+LEIA-ME.html\par
+\par
+PESBalance.exe\par
+PESBalance.exe.config\par
+README.md\par
+\par
+You\par
+olhando a imagem dos jogadores do jogo ainda n\'e3o vi tantas mudan\'e7a tipo dlss neural no rosto dos jogadores\par
+\par
+2 attachments\par
+11 hr ago\par
+\par
+Worked for 5m 19s\par
+Voc\'ea tem raz\'e3o: a 0.6 n\'e3o entrega a transforma\'e7\'e3o facial que voc\'ea procura. Ela ajusta exposi\'e7\'e3o e cores; n\'e3o reconstr\'f3i pele, olhos ou cabelo.\par
+\par
+Para testar uma dire\'e7\'e3o mais adequada, executei o  GFPGAN no close do jogador que voc\'ea enviou anteriormente:\par
+\par
+Compara\'e7\'e3o facial offline: entrada, mistura de 50% e resultado completo\par
+\par
+Esquerda: recorte da sua captura.\par
+Centro: mistura de 50% com o resultado neural.\par
+Direita: resultado completo do modelo.\par
+Agora h\'e1 uma mudan\'e7a vis\'edvel nos detalhes faciais, mas tamb\'e9m nos tra\'e7os do jogador. Precisamos avaliar essa semelhan\'e7a antes de considerar o resultado uma melhoria.\par
+\par
+Esta \'e9 uma prova fora do jogo, processada em CPU. Ainda n\'e3o est\'e1 integrada ao PES e n\'e3o comprova 60 FPS na RTX 3050. A integra\'e7\'e3o exigiria localizar e acompanhar os rostos, process\'e1-los na GPU e evitar oscila\'e7\'f5es entre frames.\par
+\par
+Veja especialmente o resultado do meio: essa mudan\'e7a se aproxima do que voc\'ea deseja, ou j\'e1 altera demais o rosto do jogador?\par
+\par
+Detalhes do teste e limita\'e7\'f5es\par
+\par
+11 hr ago\par
+\par
+Outputs (2)\par
+\par
+PES-teste-facial-offline.png\par
+\par
+PES-teste-facial-notas.md\par
+\par
+You\par
+gostei do resultado da GFPGAN 100%\par
+\par
+11 hr ago\par
+\par
+Worked for 10m 50s\par
+Vamos seguir com o GFPGAN 100% como refer\'eancia visual. Preparei um teste para medir esse modelo na sua RTX 3050 de 6 GB.\par
+\par
+Baixar PES FaceLab 0.1 \f2\emdash  Windows\par
+\par
+Extraia o ZIP em uma pasta separada do PES.\par
+Feche o jogo e execute TESTAR_GPU_FP16.cmd.\par
+Aguarde a prepara\f0\'e7\'e3o inicial: baixa v\'e1rios GB de bibliotecas e o modelo. Reserve aproximadamente 10 GB livres.\par
+Envie relatorio.json e comparacao.png, gerados na pasta results. Se falhar, envie o relat\'f3rio de erro.\par
+O Python j\'e1 est\'e1 inclu\'eddo. A reprodu\'e7\'e3o em CPU ficou id\'eantica \'e0 imagem aprovada; desempenho e mem\'f3ria na sua placa ainda precisam ser medidos.\par
+\par
+Este pacote testa um rosto fora do jogo. A integra\'e7\'e3o ao PES ser\'e1 o pr\'f3ximo desenvolvimento, orientado pelas medi\'e7\'f5es.\par
+\par
+11 hr ago\par
+\par
+Outputs (60)\par
+GFPGAN-README.md\par
+\par
+LEIA-ME.txt\par
+\par
+LICENSE-GFPGAN.txt\par
+\par
+SHA256SUMS.txt\par
+\par
+You\par
+fa\'e7a o desenvolvimento agora para o pes\par
+\par
+1 attachment\par
+11 hr ago\par
+\par
+Worked for 13m 38s\par
+Preparei a primeira integra\'e7\'e3o experimental para o PES: GFPGAN 100% em closes de replay pausado.\par
+\par
+Baixar PES FaceReplay 0.1 \f2\emdash  Windows\par
+\par
+Seu resultado de 109 ms por rosto orientou essa vers\f0\'e3o por captura. Ela ainda n\'e3o acompanha jogadores em movimento.\par
+\par
+Como testar\par
+Extraia o ZIP e mantenha a pasta do FaceLab anterior, pois reutilizamos seus pesos e bibliotecas CUDA.\par
+Com o PES fechado, execute INSTALAR_NO_PES.cmd e informe as duas pastas solicitadas.\par
+Execute INICIAR_ROSTOS.cmd e deixe a janela aberta.\par
+Abra o PES. No ReShade, desative Performance Mode, habilite PESFaceReplay e coloque-o por \'faltimo.\par
+Pause um replay com o rosto pr\'f3ximo e frontal:\par
+Ctrl+F8: capturar, reconstruir e aplicar.\par
+Ctrl+F9: remover \f2\emdash  use antes de retomar o jogo.\par
+O pacote inclui remo\f0\'e7\'e3o revers\'edvel e prote\'e7\'e3o para rejeitar imagens quando a cena mudar.\par
+\par
+Verifica\'e7\'e3o: DLL compilada para Windows 64 bits, 14 testes automatizados aprovados e fluxo facial completo validado em CPU. A execu\'e7\'e3o dentro do PES e o desempenho conjunto ainda precisam do seu teste.\par
+\par
+Envie results/latest.json e uma captura do rosto aplicado dentro do jogo.\lang22\par
+}
+ 

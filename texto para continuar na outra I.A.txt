@@ -1,0 +1,50 @@
+Você é um engenheiro de software sênior especialista em modding de jogos, visão computacional, redes neurais e desenvolvimento de plugins em C++/Python/ReShade. 
+
+Preciso que você assuma o desenvolvimento continuado de um projeto de integração de Inteligência Artificial (focado em GFPGAN) para o jogo Pro Evolution Soccer 2021 (PES 2021). 
+
+Abaixo está o histórico técnico e o estado atual do projeto desenvolvido até o momento:
+
+---
+
+### 1. HISTÓRICO E ESTADO ATUAL DO PROJETO
+
+#### Fase 1: Testes de Benchmark e GPU (Concluído)
+- **Objetivo:** Avaliar a performance do modelo GFPGAN rodando em hardware específico (NVIDIA RTX 3050 6GB / AMD Ryzen 5 5500) usando FP16/FP32.
+- **Artefatos criados:** 
+  - Pacote `PES FaceLab 0.1` (contendo scripts `.cmd`, Python embutido, verificação de hashes SHA256).
+  - Testes de reprodução em CPU validados e idênticos à imagem visual de referência.
+  - O benchmark mediu o tempo de inferência por rosto (ex: ~109 ms por rosto).
+  - Saídas geradas para validação: `relatorio.json` e `comparacao.png`.
+
+#### Fase 2: Primeira Integração Experimental no PES (Estado Atual)
+- **Objetivo:** Criar a ponte entre o modelo de IA e o motor gráfico do PES 2021 utilizando um add-on do ReShade durante cenas pausadas de replay.
+- **Artefatos criados:**
+  - Pacote `PES FaceReplay 0.1`.
+  - **DLL Compilada (64-bits):** `PESFaceReplay.addon64` (integrada via ReShade, com shader `.fx` associado).
+  - **Scripts de Automação:** `INSTALAR_NO_PES.cmd` e `INICIAR_ROSTOS.cmd`.
+  - **Arquitetura de Execução Atual:**
+    - Reutiliza os pesos e bibliotecas CUDA da instalação anterior (FaceLab).
+    - Funciona em **replay pausado** (ainda não acompanha jogadores em movimento contínuo em tempo real de gameplay).
+    - Atalhos de controle mapeados:
+      - `Ctrl + F8`: Capturar a face da tela, reconstruir via GFPGAN e aplicar a textura.
+      - `Ctrl + F9`: Removedor (restaura o estado original — deve ser usado antes de despausar o jogo).
+    - Recursos implementados: Sistema de remoção reversível e proteção de mudança de cena para rejeitar imagens inválidas.
+    - Testes: 14 testes automatizados aprovados no fluxo facial em CPU.
+
+---
+
+### 2. ESPECIFICAÇÕES TÉCNICAS E AMBIENTE
+- **Jogo Alvo:** PES 2021 (PC / Windows 64-bits).
+- **Stack Tecnológica:** Python, CUDA/PyTorch (GFPGAN), C++ (para o add-on do ReShade `.addon64` e shader `.fx`), automações via arquivos `.cmd`.
+- **Hardware de Referência do Desenvolvedor:** NVIDIA RTX 3050 6GB e AMD Ryzen 5 5500.
+
+---
+
+### 3. PRÓXIMOS PASSOS IMEDIATOS PARA O DESENVOLVIMENTO
+Com base nesse progresso, precisamos avançar nas seguintes frentes (as quais quero que você me ajude a programar/evoluir):
+
+1. **Evolução do Replay Pausado para Tracking em Movimento:** O sistema atual funciona apenas com o replay pausado (`Ctrl + F8`). Precisamos estudar a viabilidade de rastreamento e aplicação facial em tempo real durante a partida ou otimizar o fluxo de captura contínua sem travamentos (considerando o limite de ~100ms+ por inferência na RTX 3050).
+2. **Refinamento da Injeção de Textura:** Garantir que o mapeamento UV gerado pelo GFPGAN se encaixe perfeitamente nos modelos 3D faciais nativos do PES 2021 sem distorções de iluminação causadas pelo motor do jogo.
+3. **Estabilidade e Tratamento de Erros:** Analisar logs de saída (`results/latest.json`) para prevenir crashs de memória VRAM na GPU de 6GB durante o pipeline de pós-processamento.
+
+Por favor, confirme que entendeu este contexto completo, a arquitetura e os componentes existentes. Diga-me qual parte dos próximos passos quer que a gente comece a codificar agora.
